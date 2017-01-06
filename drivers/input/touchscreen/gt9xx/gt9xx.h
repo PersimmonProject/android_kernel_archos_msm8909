@@ -44,8 +44,6 @@
 struct goodix_ts_platform_data {
 	int irq_gpio;
 	u32 irq_gpio_flags;
-	int pwr_gpio;
-	u32 pwr_gpio_flags;
 	int reset_gpio;
 	u32 reset_gpio_flags;
 	const char *product_id;
@@ -137,8 +135,8 @@ extern u16 total_len;
 #define GTP_MAX_WIDTH		720
 #define GTP_INT_TRIGGER		GTP_IRQ_TAB_RISING
 #else
-#define GTP_MAX_HEIGHT		4096
-#define GTP_MAX_WIDTH		4096
+#define GTP_MAX_HEIGHT		1280
+#define GTP_MAX_WIDTH		720
 #define GTP_INT_TRIGGER		GTP_IRQ_TAB_FALLING
 #endif
 
