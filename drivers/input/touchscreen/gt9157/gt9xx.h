@@ -260,12 +260,12 @@ extern u16 total_len;
 
 /* STEP_3(optional): Specify your special config info if needed */
 #if GTP_CUSTOM_CFG
-#define GTP_MAX_HEIGHT   800
-#define GTP_MAX_WIDTH    480
+#define GTP_MAX_HEIGHT   1280
+#define GTP_MAX_WIDTH    720
 #define GTP_INT_TRIGGER  0	/* 0: Rising 1: Falling */
 #else
-#define GTP_MAX_HEIGHT   4096
-#define GTP_MAX_WIDTH    4096
+#define GTP_MAX_HEIGHT   1280
+#define GTP_MAX_WIDTH    720
 #define GTP_INT_TRIGGER  1
 #endif
 #define GTP_MAX_TOUCH    5
