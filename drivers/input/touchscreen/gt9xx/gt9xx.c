@@ -1770,7 +1770,6 @@ DEFINE_SIMPLE_ATTRIBUTE(debug_suspend_fops, gtp_debug_suspend_get,
 static int gtp_debugfs_init(struct goodix_ts_data *data)
 {
 	data->debug_base = debugfs_create_dir(GTP_DEBUGFS_DIR, NULL);
-
 	if (IS_ERR_OR_NULL(data->debug_base)) {
 		SUSLOV_DEBUG(&data->client->dev, "Failed to create debugfs dir.\n");
 			return -EINVAL;
@@ -2018,6 +2017,7 @@ static int goodix_ts_probe(struct i2c_client *client,
 	struct goodix_ts_data *ts;
 	u16 version_info;
 	int ret;
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 
 	SUSLOV_DEBUG(&client->dev, "GTP I2C Address: 0x%02x\n", client->addr);
 	if (client->dev.of_node) {
@@ -2035,62 +2035,76 @@ static int goodix_ts_probe(struct i2c_client *client,
 	} else {
 		pdata = client->dev.platform_data;
 	}
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 
 	if (!pdata) {
 		SUSLOV_DEBUG(&client->dev, "GTP invalid pdata\n");
 		return -EINVAL;
 	}
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 
 	i2c_connect_client = client;
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
 		SUSLOV_DEBUG(&client->dev, "GTP I2C not supported\n");
 		return -ENODEV;
 	}
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 
 	ts = devm_kzalloc(&client->dev, sizeof(*ts), GFP_KERNEL);
+	
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
+
 	if (!ts) {
 		SUSLOV_DEBUG(&client->dev, "GTP not enough memory for ts\n");
 		return -ENOMEM;
 	}
+	SUSLOV_DEBUG(&client->dev, " : PASSED! : ");
 
 	memset(ts, 0, sizeof(*ts));
 	ts->client = client;
 	ts->pdata = pdata;
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
+
 	/* For 2.6.39 & later use spin_lock_init(&ts->irq_lock)
 	 * For 2.6.39 & before, use ts->irq_lock = SPIN_LOCK_UNLOCKED
 	 */
 	spin_lock_init(&ts->irq_lock);
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
+
 	i2c_set_clientdata(client, ts);
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	ts->gtp_rawdiff_mode = 0;
 	ts->power_on = false;
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	ret = gtp_request_io_port(ts);
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	if (ret) {
 		SUSLOV_DEBUG(&client->dev, "GTP request IO port failed.\n");
 		goto exit_free_client_data;
 	}
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	ret = goodix_power_init(ts);
 	if (ret) {
 		SUSLOV_DEBUG(&client->dev, "GTP power init failed\n");
 		goto exit_free_io_port;
 	}
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	ret = goodix_power_on(ts);
 	if (ret) {
 		SUSLOV_DEBUG(&client->dev, "GTP power on failed\n");
 		goto exit_deinit_power;
 	}
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	gtp_reset_guitar(ts, 20);
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	ret = gtp_i2c_test(client);
 	if (ret != 2) {
 		SUSLOV_DEBUG(&client->dev, "I2C communication ERROR!\n");
 		goto exit_power_off;
 	}
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	ret = gtp_init_panel(ts);
 	if (ret < 0) {
 		SUSLOV_DEBUG(&client->dev, "GTP init panel failed.\n");
@@ -2098,7 +2112,7 @@ static int goodix_ts_probe(struct i2c_client *client,
 		ts->abs_y_max = GTP_MAX_HEIGHT;
 		ts->int_trigger_type = GTP_INT_TRIGGER;
 	}
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	ret = gtp_read_fw_version(client, &version_info);
 	if (ret != 2)
 		SUSLOV_DEBUG(&client->dev,
@@ -2106,14 +2120,14 @@ static int goodix_ts_probe(struct i2c_client *client,
 	else
 		dev_notice(&client->dev,
 			"Firmware Version: 0x%X\n", version_info);
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	if (pdata->force_update)
 		ts->force_update = true;
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	if (pdata->fw_name)
 		strlcpy(ts->fw_name, pdata->fw_name,
 						strlen(pdata->fw_name) + 1);
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	if (config_enabled(CONFIG_GT9XX_TOUCHPANEL_UPDATE)) {
 		ret = gup_init_update_proc(ts);
 		if (ret < 0) {
@@ -2122,17 +2136,19 @@ static int goodix_ts_probe(struct i2c_client *client,
 			goto exit_power_off;
 		}
 	}
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	ret = gtp_request_input_dev(ts);
 	if (ret) {
 		SUSLOV_DEBUG(&client->dev, "GTP request input dev failed.\n");
 		goto exit_free_inputdev;
 	}
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	input_set_drvdata(ts->input_dev, ts);
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	mutex_init(&ts->lock);
 #if defined(CONFIG_FB)
 	ts->fb_notif.notifier_call = fb_notifier_callback;
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	ret = fb_register_client(&ts->fb_notif);
 	if (ret)
 		SUSLOV_DEBUG(&ts->client->dev,
@@ -2144,37 +2160,39 @@ static int goodix_ts_probe(struct i2c_client *client,
 	ts->early_suspend.resume = goodix_ts_late_resume;
 	register_early_suspend(&ts->early_suspend);
 #endif
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	ts->goodix_wq = create_singlethread_workqueue("goodix_wq");
 	INIT_WORK(&ts->work, goodix_ts_work_func);
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	ret = gtp_request_irq(ts);
 	if (ret)
 		SUSLOV_DEBUG(&client->dev, "GTP request irq failed %d.\n", ret);
 	else
 		SUSLOV_DEBUG(&client->dev, "GTP works in interrupt mode.\n");
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	ret = gtp_check_product_id(client);
 	if (ret != 0) {
 		SUSLOV_DEBUG(&client->dev, "GTP Product id doesn't match.\n");
 		goto exit_free_irq;
 	}
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	if (ts->use_irq)
 		gtp_irq_enable(ts);
 
 #ifdef CONFIG_GT9XX_TOUCHPANEL_DEBUG
 	init_wr_node(client);
 #endif
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 #if GTP_ESD_PROTECT
 	gtp_esd_switch(client, SWITCH_ON);
 #endif
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	ret = sysfs_create_group(&client->dev.kobj, &gtp_attr_grp);
 	if (ret < 0) {
 		SUSLOV_DEBUG(&client->dev, "sys file creation failed.\n");
 		goto exit_free_irq;
 	}
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	ts->gtp_proc = proc_create("gtp_config",
 		S_IRUGO, NULL, &config_proc_ops);
 	if (!ts->gtp_proc)
@@ -2186,11 +2204,12 @@ static int goodix_ts_probe(struct i2c_client *client,
 			"Failed to create debugfs entries, %d\n", ret);
 		goto exit_remove_sysfs;
 	}
-
+	SUSLOV_DEBUG(&client->dev, ": PASSED!");
 	init_done = true;
 	dev_notice(&client->dev, "Probe Successfully\n");
+	SUSLOV_DEBUG(&client->dev, "RETURNING STATUS ZERO !");
 	return 0;
-
+	
 exit_remove_sysfs:
 	sysfs_remove_group(&ts->input_dev->dev.kobj, &gtp_attr_grp);
 exit_free_irq:
