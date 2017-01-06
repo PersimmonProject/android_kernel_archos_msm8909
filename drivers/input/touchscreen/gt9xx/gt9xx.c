@@ -1116,6 +1116,20 @@ static int gtp_request_io_port(struct goodix_ts_data *ts)
 		goto err_pwr_off;
 	}
 
+	if (gpio_is_valid(pdata->pwr_gpio)) {
+		ret = gpio_request(pdata->pwr_gpio, "goodix_ts_power_gpio");
+		if (ret) {
+			dev_err(&client->dev, "Unable to request power gpio [%d]\n",
+				pdata->pwr_gpio);
+			goto err_free_irq_gpio;
+		}
+	} else {
+		dev_err(&client->dev, "Invalid power gpio [%d]!\n",
+			pdata->pwr_gpio);
+		ret = -EINVAL;
+		goto err_free_irq_gpio;
+	}
+
 	if (gpio_is_valid(pdata->reset_gpio)) {
 		ret = gpio_request(pdata->reset_gpio, "goodix_ts_reset_gpio");
 		if (ret) {
@@ -1291,6 +1305,7 @@ static int reg_set_optimum_mode_check(struct regulator *reg, int load_uA)
 static int goodix_power_on(struct goodix_ts_data *ts)
 {
 	int ret;
+	struct goodix_ts_platform_data *pdata = ts->pdata;
 
 	if (ts->power_on) {
 		dev_info(&ts->client->dev,
@@ -1335,6 +1350,16 @@ static int goodix_power_on(struct goodix_ts_data *ts)
 				"Regulator vdd enable failed ret=%d\n", ret);
 			goto err_enable_vdd;
 		}
+	}
+
+	if (gpio_is_valid(pdata->pwr_gpio)) {
+		ret = gpio_direction_output(pdata->pwr_gpio, 1);
+		if (ret) {
+			dev_err(&ts->client->dev,
+				"Enable power gpio failed ret=%d\n", ret);
+			goto err_set_vtg_vcc_i2c;
+		}
+		udelay(2);
 	}
 
 	if (!IS_ERR(ts->vcc_i2c)) {
@@ -1396,6 +1421,7 @@ err_set_opt_avdd:
 static int goodix_power_off(struct goodix_ts_data *ts)
 {
 	int ret;
+	struct goodix_ts_platform_data *pdata = ts->pdata;
 
 	if (!ts->power_on) {
 		dev_info(&ts->client->dev,
@@ -1415,6 +1441,13 @@ static int goodix_power_off(struct goodix_ts_data *ts)
 			dev_err(&ts->client->dev,
 				"Regulator vcc_i2c disable failed ret=%d\n",
 				ret);
+	}
+
+	if (gpio_is_valid(pdata->pwr_gpio)) {
+		ret = gpio_direction_output(pdata->pwr_gpio, 0);
+		if (ret)
+			dev_err(&ts->client->dev,
+				"Disable power gpio failed ret=%d\n", ret);
 	}
 
 	if (!IS_ERR(ts->vdd)) {
@@ -1773,6 +1806,34 @@ static int gtp_debugfs_init(struct goodix_ts_data *data)
 	return 0;
 }
 
+static ssize_t gtp_config_read_proc(struct file *file,
+	char __user *page, size_t size, loff_t *ppos)
+{
+	char *ptr = page;
+	char temp_data[GTP_CONFIG_MAX_LENGTH + 2] = {0x80, 0x47};
+	int i;
+
+	if (*ppos)
+		return 0;
+
+	gtp_i2c_read(i2c_connect_client,
+		temp_data, GTP_CONFIG_MAX_LENGTH + 2);
+
+	for (i = 0 ; i < GTP_CONFIG_MAX_LENGTH ; i++) {
+		ptr += snprintf(ptr, 5,	"0x%02X ", temp_data[i+2]);
+		if (i % 8 == 7)
+			ptr += snprintf(ptr, sizeof("\n"), "\n");
+	}
+
+	*ppos += ptr - page;
+	return (ssize_t)(ptr - page);
+}
+
+static const struct file_operations config_proc_ops = {
+	.owner = THIS_MODULE,
+	.read = gtp_config_read_proc,
+};
+
 static int goodix_ts_get_dt_coords(struct device *dev, char *name,
 				struct goodix_ts_platform_data *pdata)
 {
@@ -1868,6 +1929,11 @@ static int goodix_parse_dt(struct device *dev,
 				0, &pdata->irq_gpio_flags);
 	if (pdata->irq_gpio < 0)
 		return pdata->irq_gpio;
+
+	pdata->pwr_gpio = of_get_named_gpio_flags(np, "power_ldo-gpios",
+				0, &pdata->pwr_gpio_flags);
+	if (pdata->pwr_gpio < 0)
+		return pdata->pwr_gpio;
 
 	rc = of_property_read_string(np, "goodix,product-id",
 						&pdata->product_id);
@@ -2030,7 +2096,14 @@ static int goodix_ts_probe(struct i2c_client *client,
 		ts->int_trigger_type = GTP_INT_TRIGGER;
 	}
 
-	
+	ret = gtp_read_fw_version(client, &version_info);
+	if (ret != 2)
+		dev_err(&client->dev,
+			"GTP firmware version read failed.\n");
+	else
+		dev_notice(&client->dev,
+			"Firmware Version: 0x%X\n", version_info);
+
 	if (pdata->force_update)
 		ts->force_update = true;
 
@@ -2099,6 +2172,11 @@ static int goodix_ts_probe(struct i2c_client *client,
 		goto exit_free_irq;
 	}
 
+	ts->gtp_proc = proc_create("gtp_config",
+		S_IRUGO, NULL, &config_proc_ops);
+	if (!ts->gtp_proc)
+		dev_err(&client->dev, "create proc failed.\n");
+
 	ret = gtp_debugfs_init(ts);
 	if (ret != 0) {
 		dev_err(&client->dev,
@@ -2107,6 +2185,7 @@ static int goodix_ts_probe(struct i2c_client *client,
 	}
 
 	init_done = true;
+	dev_notice(&client->dev, "Probe Successfully\n");
 	return 0;
 
 exit_remove_sysfs:
@@ -2140,6 +2219,8 @@ exit_deinit_power:
 exit_free_io_port:
 	if (gpio_is_valid(pdata->reset_gpio))
 		gpio_free(pdata->reset_gpio);
+	if (gpio_is_valid(pdata->pwr_gpio))
+		gpio_free(pdata->pwr_gpio);
 	if (gpio_is_valid(pdata->irq_gpio))
 		gpio_free(pdata->irq_gpio);
 exit_free_client_data:
@@ -2198,6 +2279,8 @@ static int goodix_ts_remove(struct i2c_client *client)
 		goodix_power_deinit(ts);
 		if (gpio_is_valid(ts->pdata->reset_gpio))
 			gpio_free(ts->pdata->reset_gpio);
+		if (gpio_is_valid(ts->pdata->pwr_gpio))
+			gpio_free(ts->pdata->pwr_gpio);
 		if (gpio_is_valid(ts->pdata->irq_gpio))
 			gpio_free(ts->pdata->irq_gpio);
 		i2c_set_clientdata(client, NULL);
