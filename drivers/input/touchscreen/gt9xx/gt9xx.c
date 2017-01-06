@@ -848,7 +848,7 @@ Output:
 *******************************************************/
 static int gtp_init_panel(struct goodix_ts_data *ts)
 {
-	struct i2c_client *client = ts->client;
+//	struct i2c_client *client = ts->client;
 	unsigned char *config_data = NULL;
 	int ret = -EIO;
 	int i;
@@ -1094,7 +1094,7 @@ Output:
 *******************************************************/
 static int gtp_request_io_port(struct goodix_ts_data *ts)
 {
-	struct i2c_client *client = ts->client;
+//	struct i2c_client *client = ts->client;
 	struct goodix_ts_platform_data *pdata = ts->pdata;
 	int ret;
 
