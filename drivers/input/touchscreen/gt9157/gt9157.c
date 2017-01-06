@@ -3836,7 +3836,7 @@ static const struct i2c_device_id goodix_ts_id[] = {
 };
 
 static struct of_device_id goodix_match_table[] = {
-	{.compatible = "goodix,gt9157",},
+	{.compatible = "goodix,gt9xx",},
 	{},
 };
 
