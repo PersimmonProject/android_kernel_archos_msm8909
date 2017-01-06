@@ -118,7 +118,6 @@ struct i2c_client  *i2c_connect_client;
 #define GTP_DEBUGFS_FILE_ADDR		"addr"
 
 #define SUSLOV_DEBUG(shit,fmt,arg...)          do{\
-                                         if(tpd_em_log)\
                                          printk("<<GTP-DBG>>[%s:%d]"fmt"\n",__func__, __LINE__, ##arg);\
                                        }while(0)
 /*******************************************************
