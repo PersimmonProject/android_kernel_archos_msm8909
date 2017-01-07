@@ -1136,7 +1136,7 @@ if (enable) {
       reading = stk3x1x_get_ps_reading(ps_data);
       printk(KERN_INFO "%s: ps input event=%d, ps code = %d\n", __func__, near_far_state, reading);
     }
-  } else {
+#endif
 #ifdef STK_POLL_PS
     hrtimer_cancel(&ps_data->ps_timer);
     cancel_work_sync(&ps_data->stk_ps_work);
