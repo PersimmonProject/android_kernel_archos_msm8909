@@ -1030,7 +1030,7 @@ static int32_t stk3x1x_enable_ps(struct stk3x1x_data *ps_data, uint8_t enable, u
   uint8_t w_state_reg;
   uint8_t curr_ps_enable;
   uint32_t reading;
-  int32_t near_far_state;
+  //int32_t near_far_state;
 
 #ifdef STK_QUALCOMM_POWER_CTRL
   if (enable) {
