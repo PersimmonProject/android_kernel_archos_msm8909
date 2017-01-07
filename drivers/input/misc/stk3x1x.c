@@ -1819,7 +1819,8 @@ static int stk3x1x_power_on(struct stk3x1x_data *data, bool on)
     if (ret) {
       dev_err(&data->client->dev,
         "Regulator vio disable failed ret=%d\n", ret);
-      regulator_enable(data->vdd);
+      int tmp99345;
+      tmp99345 = regulator_enable(data->vdd);
     }
   } else if (on && !data->power_enabled) {
 
