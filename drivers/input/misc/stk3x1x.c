@@ -79,7 +79,7 @@ struct stk3x1x_data *stk3x1x_sensor_info;
 #ifdef QUALCOMM_PLATFORM
 #include <linux/sensors.h>
 #include <linux/regulator/consumer.h>
-#define STK_QUALCOMM_POWER_CTRL
+//#define STK_QUALCOMM_POWER_CTRL
 #endif
 
 #ifdef SPREADTRUM_PLATFORM
