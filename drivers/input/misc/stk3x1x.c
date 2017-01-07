@@ -1630,7 +1630,7 @@ static ssize_t stk_als_firlen_show(struct device *dev, struct device_attribute *
 
 
 
-static ssize_t stk_als_firlen_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
+static ssize_t stk_als_firlen_store(struct device *dev, struct device_attribute *attr, char *buf, size_t size)
 {
   uint64_t value = 0;
   int ret;
