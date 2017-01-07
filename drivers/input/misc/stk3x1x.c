@@ -1806,7 +1806,8 @@ static void stk3x1x_late_resume(struct early_suspend *h)
 static int stk3x1x_power_on(struct stk3x1x_data *data, bool on)
 {
   int ret = 0;
-
+  int tmp99345 = 0;
+  
   if (!on && data->power_enabled) {
     ret = regulator_disable(data->vdd);
     if (ret) {
@@ -1819,7 +1820,6 @@ static int stk3x1x_power_on(struct stk3x1x_data *data, bool on)
     if (ret) {
       dev_err(&data->client->dev,
         "Regulator vio disable failed ret=%d\n", ret);
-      int tmp99345;
       tmp99345 = regulator_enable(data->vdd);
     }
   } else if (on && !data->power_enabled) {
