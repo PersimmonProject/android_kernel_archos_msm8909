@@ -1978,19 +1978,19 @@ static int stk3x1x_parse_dt(struct device *dev,
     return rc;
   }
 
-  rc = of_property_read_u32(np, "sitronix,ps-thdh", &temp_val);
+  rc = of_property_read_u32(np, "sitronix,ps-thd-h", &temp_val);
   if (!rc)
     pdata->ps_thd_h = (u16)temp_val;
   else {
-    dev_err(dev, "Unable to read ps-thdh\n");
+    dev_err(dev, "Unable to read ps-thd-h\n");
     return rc;
   }
 
-  rc = of_property_read_u32(np, "sitronix,ps-thdl", &temp_val);
+  rc = of_property_read_u32(np, "sitronix,ps-thd-l", &temp_val);
   if (!rc)
     pdata->ps_thd_l = (u16)temp_val;
   else {
-    dev_err(dev, "Unable to read ps-thdl\n");
+    dev_err(dev, "Unable to read ps-thd-l\n");
     return rc;
   }
 
