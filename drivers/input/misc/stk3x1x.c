@@ -2742,33 +2742,33 @@ static int stk3x1x_parse_dt(struct device *dev,
     unsigned int temp_val=0;
     const __be32 *prop; /* PERI-BJ-Add_Regular_Optimum_feature-00+ */
 
-    of_property_read_u32(np, "sensortek,slave-addr",&temp_val);
+    of_property_read_u32(np, "sitronixk,slave-addr",&temp_val);
     //pdata->slave_addr = temp_val;
-    pdata->int_pin = of_get_named_gpio_flags(np,"sensortek,int_pin", 0, &temp_val);
-    of_property_read_u32(np, "sensortek,state_reg",&temp_val);
+    pdata->int_pin = of_get_named_gpio_flags(np,"sitronix,int_pin", 0, &temp_val);
+    of_property_read_u32(np, "sitronix,state_reg",&temp_val);
     pdata->state_reg = temp_val;
-    of_property_read_u32(np, "sensortek,psctrl_reg",&temp_val);
+    of_property_read_u32(np, "sitronix,psctrl_reg",&temp_val);
     pdata->psctrl_reg = temp_val;
-    of_property_read_u32(np, "sensortek,alsctrl_reg",&temp_val);
+    of_property_read_u32(np, "sitronix,alsctrl_reg",&temp_val);
     pdata->alsctrl_reg = temp_val;
-    of_property_read_u32(np, "sensortek,ledctrl_reg",&temp_val);
+    of_property_read_u32(np, "sitronix,ledctrl_reg",&temp_val);
     pdata->ledctrl_reg = temp_val;
-    of_property_read_u32(np, "sensortek,wait_reg",&temp_val);
+    of_property_read_u32(np, "sitronix,wait_reg",&temp_val);
     pdata->wait_reg = temp_val;
 
-    of_property_read_u32(np, "sensortek,ps_thd_h",&temp_val);
+    of_property_read_u32(np, "sitronix,ps_thd_h",&temp_val);
     pdata->ps_thd_h = temp_val;
-    of_property_read_u32(np, "sensortek,ps_thd_l",&temp_val);
+    of_property_read_u32(np, "sitronix,ps_thd_l",&temp_val);
     pdata->ps_thd_l = temp_val;
 
-    of_property_read_u32(np, "sensortek,transmittance",&temp_val);
+    of_property_read_u32(np, "sitronix,transmittance",&temp_val);
     pdata->transmittance = temp_val;
 
 /* PERI-BJ-Add_Regular_Optimum_feature-00+{ */
-    prop = of_get_property(np, "sensortek,vdd-current-level",&temp_val);
+    prop = of_get_property(np, "sitronix,vdd-current-level",&temp_val);
     if (!prop || (temp_val != (2 * sizeof(__be32))))
     {
-        printk(KERN_ERR "%s, %s sensortek,vdd-current-level property.\n", __func__, prop ? "invalid format" : "no");
+        printk(KERN_ERR "%s, %s sitronix,vdd-current-level property.\n", __func__, prop ? "invalid format" : "no");
         return -ENODEV;
     }
     else
@@ -3059,7 +3059,7 @@ MODULE_DEVICE_TABLE(i2c, stk_ps_id);
 
 #ifdef CONFIG_OF
 static struct of_device_id stk3x1x_match_table[] = {
-	{ .compatible = "sensortek,stk3x1x",},
+	{ .compatible = "sitronix,stk3x1x",},
 	{ },
 };
 #else
