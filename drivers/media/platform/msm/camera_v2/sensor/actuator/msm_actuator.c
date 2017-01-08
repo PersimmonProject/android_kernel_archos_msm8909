@@ -20,7 +20,9 @@
 DEFINE_MSM_MUTEX(msm_actuator_mutex);
 
 #undef CDBG
-#define CDBG(fmt, args...) pr_debug(fmt, ##args)
+#define CDBG(fmt,arg...)          do{\
+                                         printk("<<GTP-DBG>>[%s:%d]"fmt"\n",__func__, __LINE__, ##arg);\
+                                       }while(0)
 #define MAX_QVALUE  4096
 static struct v4l2_file_operations msm_actuator_v4l2_subdev_fops;
 static int32_t msm_actuator_power_up(struct msm_actuator_ctrl_t *a_ctrl);
