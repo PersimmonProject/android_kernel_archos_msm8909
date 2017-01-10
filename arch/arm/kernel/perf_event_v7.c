@@ -912,7 +912,7 @@ static inline u32 armv7_pmnc_getreset_flags(void)
 }
 
 #ifdef DEBUG
-static void armv7_pmnc_dump_regs(struct arm_pmu *cpu_pmu)
+/*static void armv7_pmnc_dump_regs(struct arm_pmu *cpu_pmu)
 {
 	u32 val;
 	unsigned int cnt;
@@ -947,7 +947,7 @@ static void armv7_pmnc_dump_regs(struct arm_pmu *cpu_pmu)
 		printk(KERN_INFO "CNT[%d] evtsel=0x%08x\n",
 			ARMV7_IDX_TO_COUNTER(cnt), val);
 	}
-}
+}*/
 #endif
 
 static void armv7pmu_enable_event(struct perf_event *event)

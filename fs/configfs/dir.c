@@ -952,7 +952,7 @@ static void client_drop_item(struct config_item *parent_item,
 }
 
 #ifdef DEBUG
-static void configfs_dump_one(struct configfs_dirent *sd, int level)
+/*static void configfs_dump_one(struct configfs_dirent *sd, int level)
 {
 	printk(KERN_INFO "%*s\"%s\":\n", level, " ", configfs_get_name(sd));
 
@@ -965,9 +965,9 @@ static void configfs_dump_one(struct configfs_dirent *sd, int level)
 	type_print(CONFIGFS_USET_DEFAULT);
 	type_print(CONFIGFS_USET_DROPPING);
 #undef type_print
-}
+}*/
 
-static int configfs_dump(struct configfs_dirent *sd, int level)
+/*static int configfs_dump(struct configfs_dirent *sd, int level)
 {
 	struct configfs_dirent *child_sd;
 	int ret = 0;
@@ -984,7 +984,7 @@ static int configfs_dump(struct configfs_dirent *sd, int level)
 	}
 
 	return ret;
-}
+}*/
 #endif
 
 
