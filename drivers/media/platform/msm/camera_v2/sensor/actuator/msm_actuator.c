@@ -437,8 +437,11 @@ static int32_t msm_actuator_init_step_table(struct msm_actuator_ctrl_t *a_ctrl,
 	uint16_t step_boundary = 0;
 	uint32_t max_code_size = 1;
 	uint16_t data_size = set_info->actuator_params.data_size;
+	uint16_t ret1 = 0;
 	CDBG("Enter\n");
-
+	
+	ret1 = msm_actuator_power_up(a_ctrl);
+	
 	/* validate the actuator state */
 	if (a_ctrl->actuator_state != ACTUATOR_POWER_UP) {
 		pr_err("%s:%d invalid actuator_state %d\n"
