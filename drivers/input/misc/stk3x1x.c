@@ -2177,10 +2177,10 @@ static ssize_t stk_ps_enable_store(struct device *dev, struct device_attribute *
   else if (sysfs_streq(buf, "0"))
     en = 0;
   else 
-  {
-    printk(KERN_ERR "%s, invalid value %d\n", __func__, *buf);
-    return -EINVAL;
-  }
+    en = 1;
+  //  printk(KERN_ERR "%s, invalid value %d\n", __func__, *buf);
+  //  return -EINVAL;
+  
     printk(KERN_INFO "%s: Enable PS : %d\n", __func__, en);
     mutex_lock(&ps_data->io_lock);
     stk3x1x_enable_ps(ps_data, en, 1);
