@@ -53,7 +53,7 @@
 #define STK_ALS_CHANGE_THD  10  /* The threshold to trigger ALS interrupt, unit: lux */ 
 #endif  /* #ifdef CONFIG_STK_PS_ALS_USE_CHANGE_THRESHOLD */
 #define STK_INT_PS_MODE     1 /* 1, 2, or 3 */
-#define STK_POLL_PS
+//#define STK_POLL_PS
 #define STK_POLL_ALS    /* ALS interrupt is valid only when STK_INT_PS_MODE = 1 or 4*/
 #define STK_TUNE0
 #define CALI_PS_EVERY_TIME
