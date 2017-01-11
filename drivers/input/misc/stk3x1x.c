@@ -4125,6 +4125,9 @@ static int stk3x1x_probe(struct i2c_client *client,
 #ifdef CONFIG_FTS_GESTURE
   ps_data_A=ps_data;
 #endif
+  mutex_lock(&ps_data->io_lock);
+  err = stk3x1x_enable_ps(ps_data, 1,1);
+  mutex_unlock(&ps_data->io_lock);
   printk(KERN_INFO "%s: probe successfully", __func__);
   return 0;
 
