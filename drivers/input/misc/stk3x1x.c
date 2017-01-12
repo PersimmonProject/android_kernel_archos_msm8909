@@ -3934,6 +3934,8 @@ static int stk3x1x_set_input_devices(struct stk3x1x_data *ps_data)
     printk(KERN_ERR "%s:could not create sysfs group for als\n", __func__);
     return err;
   }
+  
+  printk("SUSLOV_DEBUG: sysfs proximity path is %s %s", ps_data->ps_input_dev->dev.kobj->sd, stk_ps_attribute_group->name); 
   err = sysfs_create_group(&ps_data->ps_input_dev->dev.kobj, &stk_ps_attribute_group);
   if (err < 0) 
   {
