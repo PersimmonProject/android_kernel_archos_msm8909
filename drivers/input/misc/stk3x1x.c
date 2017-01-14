@@ -20,6 +20,7 @@
  */
 
 #include "../../../fs/sysfs/sysfs.h"
+#include "../../../include/linux/kobject.h"
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -2766,9 +2767,9 @@ static struct attribute *stk_ps_attrs [] =
 };
 
 static struct attribute_group stk_ps_attribute_group = {
-#ifndef QUALCOMM_PLATFORM
-  .name = "driver", 
-#endif  
+//#ifndef QUALCOMM_PLATFORM
+  .name = "device", 
+//#endif  
   .attrs = stk_ps_attrs,
 };
 
@@ -3936,7 +3937,7 @@ static int stk3x1x_set_input_devices(struct stk3x1x_data *ps_data)
     return err;
   }
   
-  printk("SUSLOV_DEBUG: sysfs proximity path is %s %s", ps_data->ps_input_dev->dev.kobj.sd->s_name, stk_ps_attribute_group.name); 
+  printk("SUSLOV_DEBUG: sysfs proximity path is %s %s", ps_data->ps_input_dev->dev.kobj.name, stk_ps_attribute_group.name); 
   err = sysfs_create_group(&ps_data->ps_input_dev->dev.kobj, &stk_ps_attribute_group);
   if (err < 0) 
   {
